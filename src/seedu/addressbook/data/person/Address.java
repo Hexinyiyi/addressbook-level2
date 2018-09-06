@@ -12,7 +12,10 @@ public class Address {
     public static final String MESSAGE_ADDRESS_CONSTRAINTS = "Person addresses can be in any format";
     public static final String ADDRESS_VALIDATION_REGEX = ".+";
 
-    public final String value;
+    private Block block;
+    private Street street = new Street("");
+    private Unit unit = new Unit("");
+    private Postal postal = new Postal("");
     private boolean isPrivate;
 
     /**
@@ -26,7 +29,17 @@ public class Address {
         if (!isValidAddress(trimmedAddress)) {
             throw new IllegalValueException(MESSAGE_ADDRESS_CONSTRAINTS);
         }
-        this.value = trimmedAddress;
+        String[] parts = trimmedAddress.split(",");
+        this.block = new Block(parts[0].trim());
+        if (parts.length > 1) {
+            this.street = new Street(parts[1].trim());
+        }
+        if (parts.length > 2) {
+            this.unit = new Unit(parts[2].trim());
+        }
+        if (parts.length > 3) {
+            this.postal = new Postal(parts[3].trim());
+        }
     }
 
     /**
@@ -38,22 +51,125 @@ public class Address {
 
     @Override
     public String toString() {
-        return value;
+        String result = block.toString();
+        if (!street.toString().equals("")) {
+            result += ", " + street.toString();
+        }
+        if (!unit.toString().equals("")) {
+            result += ", " + unit.toString();
+        }
+        if (!postal.toString().equals("")) {
+            result += ", " + postal.toString();
+        }
+        return result;
     }
 
     @Override
     public boolean equals(Object other) {
         return other == this // short circuit if same object
                 || (other instanceof Address // instanceof handles nulls
-                && this.value.equals(((Address) other).value)); // state check
+                && this.toString().equals((other).toString())); // state check
     }
 
     @Override
     public int hashCode() {
-        return value.hashCode();
+        return this.toString().hashCode();
     }
 
     public boolean isPrivate() {
         return isPrivate;
+    }
+
+
+    public class Block {
+        private String blockNumber;
+
+        public Block(String blockNumber) {
+            this.blockNumber = blockNumber;
+        }
+
+        public String getBlockNumber() {
+            return blockNumber;
+        }
+
+        @Override
+        public String toString() {
+            return blockNumber;
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            return other == this ||
+                    (other instanceof Block && this.blockNumber.equals(((Block) other).getBlockNumber()));
+        }
+    }
+
+    public class Street {
+        private String street;
+
+        public Street(String street) {
+            this.street = street;
+        }
+
+        public String getStreet() {
+            return street;
+        }
+
+        @Override
+        public String toString() {
+            return street;
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            return other == this ||
+                    (other instanceof Street && this.street.equals(((Street) other).getStreet()));
+        }
+    }
+
+    public class Unit {
+        private String unit;
+
+        public Unit(String unit) {
+            this.unit = unit;
+        }
+
+        public String getUnit() {
+            return unit;
+        }
+
+        @Override
+        public String toString() {
+            return unit;
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            return other == this ||
+                    (other instanceof Unit && this.unit.equals(((Unit) other).getUnit()));
+        }
+    }
+
+    public class Postal {
+        private String postalCode;
+
+        public Postal(String postalCode) {
+            this.postalCode = postalCode;
+        }
+
+        public String getPostalCode() {
+            return postalCode;
+        }
+
+        @Override
+        public String toString() {
+            return postalCode;
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            return other == this ||
+                    (other instanceof Postal && this.postalCode.equals(((Postal) other).getPostalCode()));
+        }
     }
 }
