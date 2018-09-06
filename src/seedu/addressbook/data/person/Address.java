@@ -6,7 +6,7 @@ import seedu.addressbook.data.exception.IllegalValueException;
  * Represents a Person's address in the address book.
  * Guarantees: immutable; is valid as declared in {@link #isValidAddress(String)}
  */
-public class Address {
+public class Address extends Contact{
 
     public static final String EXAMPLE = "123, some street";
     public static final String MESSAGE_ADDRESS_CONSTRAINTS = "Person addresses can be in any format";
@@ -16,7 +16,6 @@ public class Address {
     private Street street = new Street("");
     private Unit unit = new Unit("");
     private Postal postal = new Postal("");
-    private boolean isPrivate;
 
     /**
      * Validates given address.
@@ -24,8 +23,8 @@ public class Address {
      * @throws IllegalValueException if given address string is invalid.
      */
     public Address(String address, boolean isPrivate) throws IllegalValueException {
+        super(address, isPrivate);
         String trimmedAddress = address.trim();
-        this.isPrivate = isPrivate;
         if (!isValidAddress(trimmedAddress)) {
             throw new IllegalValueException(MESSAGE_ADDRESS_CONSTRAINTS);
         }
@@ -40,17 +39,7 @@ public class Address {
         if (parts.length > 3) {
             this.postal = new Postal(parts[3].trim());
         }
-    }
 
-    /**
-     * Returns true if a given string is a valid person address.
-     */
-    public static boolean isValidAddress(String test) {
-        return test.matches(ADDRESS_VALIDATION_REGEX);
-    }
-
-    @Override
-    public String toString() {
         String result = block.toString();
         if (!street.toString().equals("")) {
             result += ", " + street.toString();
@@ -61,24 +50,16 @@ public class Address {
         if (!postal.toString().equals("")) {
             result += ", " + postal.toString();
         }
-        return result;
+        this.value = result;
     }
 
-    @Override
-    public boolean equals(Object other) {
-        return other == this // short circuit if same object
-                || (other instanceof Address // instanceof handles nulls
-                && this.toString().equals((other).toString())); // state check
+    /**
+     * Returns true if a given string is a valid person address.
+     */
+    public static boolean isValidAddress(String test) {
+        return test.matches(ADDRESS_VALIDATION_REGEX);
     }
 
-    @Override
-    public int hashCode() {
-        return this.toString().hashCode();
-    }
-
-    public boolean isPrivate() {
-        return isPrivate;
-    }
 
 
     public class Block {
